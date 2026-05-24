@@ -1,0 +1,19 @@
+# Python caches
+__pycache__/
+*.pyc
+
+# Virtual Environments
+.venv/
+venv/
+env/
+
+# PyInstaller Build Files
+build/
+dist/
+*.spec
+*.exe
+
+# VaultX Specific Security & Data Files
+vaultx_data.db
+*.db
+intruders/

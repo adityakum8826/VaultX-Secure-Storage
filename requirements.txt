@@ -1,0 +1,12 @@
+#customtkinter==5.2.2
+#cryptography==42.0.5
+#bcrypt==4.1.2
+#opencv-python==4.9.0.80
+#pillow==10.2.0
+#pyinstaller
+
+customtkinter
+cryptography
+bcrypt
+opencv-python
+pillow

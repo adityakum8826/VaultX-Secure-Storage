@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VaultX - Secure Storage</title>
+    <link rel="stylesheet" href="style.css?v=6">
+    <script type="text/javascript" src="/eel.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="toast-container"></div>
+    <div class="bg-shape1"></div>
+    <div class="bg-shape2"></div>
+
+    <div id="auth-view" class="glass-panel active-view">
+        <div class="logo">Vault<span>X</span></div>
+        <p id="auth-subtitle">Enter master password to unlock</p>
+
+        <div class="input-wrapper">
+            <input type="password" id="password" placeholder="Password" required>
+            <span class="eye-icon" onclick="togglePwd('password', this)">👁️</span>
+        </div>
+
+        <div id="setup-fields" style="display: none;">
+            <div class="strength-meter"><div id="strength-bar"></div></div>
+            <p id="strength-text" style="font-size: 12px; color: gray; text-align: left; margin-top: 5px;"></p>
+
+            <div class="input-wrapper">
+                <input type="password" id="confirm-password" placeholder="Confirm Password">
+                <span class="eye-icon" onclick="togglePwd('confirm-password', this)">👁️</span>
+            </div>
+            <div class="input-wrapper" style="margin-top: 10px;">
+                <input type="text" id="password-hint" placeholder="Password Hint (Optional)">
+            </div>
+        </div>
+
+        <button id="auth-btn" class="liquid-btn" onclick="handleAuth()">Unlock Vault</button>
+        <p id="forgot-btn" class="forgot-link" onclick="handleForgotPwd()" style="display: none;">Forgot Password?</p>
+    </div>
+
+    <div id="dashboard-view" class="dashboard" style="display: none;">
+        <div class="sidebar glass-panel">
+            <div class="logo-small">Vault<span>X</span></div>
+
+            <div class="sidebar-label">Main Menu</div>
+            <button class="menu-btn pulse-btn" onclick="addFolder()" style="background: rgba(52, 152, 219, 0.2); border-color: #3498db; color: #3498db;">➕ Add Folder</button>
+
+            <div class="sidebar-label" style="margin-top: 20px;">Settings</div>
+            <button class="menu-btn" onclick="triggerBackup()">☁️ Secure Backup</button>
+            <button class="menu-btn" onclick="openActivityLog()">📜 Activity Log</button>
+
+            <button class="menu-btn danger-btn" onclick="lockSession()" style="margin-top: auto;">🔒 Lock Session</button>
+        </div>
+
+        <div class="main-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>Dashboard Overview</h2>
+                <input type="text" id="vault-search" placeholder="🔍 Search Vaults..." class="search-bar" oninput="filterVaults()">
+            </div>
+
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(52, 152, 219, 0.2); color: #3498db;">📁</div>
+                    <div><div class="stat-title">Total Vaults</div><div class="stat-value" id="stat-total-vaults">0</div></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(155, 89, 182, 0.2); color: #9b59b6;">📄</div>
+                    <div><div class="stat-title">Secured Files</div><div class="stat-value" id="stat-total-files">0</div></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(46, 204, 113, 0.2); color: #2ecc71;">🛡️</div>
+                    <div><div class="stat-title">System Status</div><div class="stat-value" style="color: #2ecc71; font-size: 22px;">Active</div></div>
+                </div>
+            </div>
+
+            <h3 style="margin-bottom: 15px; font-weight: 400; color: #bdc3c7;">Your Protected Vaults</h3>
+            <div id="vault-list" class="vault-grid"></div>
+        </div>
+    </div>
+
+    <div id="log-modal" class="modal">
+        <div class="modal-content glass-panel" style="width: 500px; max-height: 80vh; display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="color: #3498db;">System Activity Log</h3>
+                <span style="cursor: pointer; font-size: 20px; opacity: 0.7;" onclick="closeActivityLog()">✖</span>
+            </div>
+            <div id="log-list" style="overflow-y: auto; flex: 1; padding-right: 10px;">
+                </div>
+        </div>
+    </div>
+
+    <div id="confirm-modal" class="modal">
+        <div class="modal-content glass-panel" style="max-width: 450px; text-align: center;">
+            <h3 id="confirm-title" style="margin-bottom: 15px; color: #e74c3c;">Warning</h3>
+            <p id="confirm-message" style="font-size: 14px; color: #bdc3c7; margin-bottom: 25px; white-space: pre-wrap; line-height: 1.6;"></p>
+            <div style="display: flex; justify-content: center; gap: 15px;">
+                <button id="confirm-cancel-btn" class="action-btn" style="background: transparent; color: #95a5a6; border: 1px solid #95a5a6; padding: 10px 25px;">Cancel</button>
+                <button id="confirm-ok-btn" class="action-btn btn-lock" style="padding: 10px 25px;">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="loading-modal" class="modal">
+        <div class="modal-content glass-panel" style="text-align: center;">
+            <h3 id="modal-title">Encrypting Files...</h3>
+            <p id="modal-file" class="file-text">Preparing...</p>
+            <div class="progress-bar-container"><div id="progress-fill" class="progress-fill"></div></div>
+            <p id="modal-percent">0%</p>
+        </div>
+    </div>
+
+    <script src="main.js?v=6"></script>
+</body>
+</html>
