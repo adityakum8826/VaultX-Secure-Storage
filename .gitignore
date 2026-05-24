@@ -16,4 +16,4 @@ dist/
 # VaultX Specific Security & Data Files
 vaultx_data.db
 *.db
-intruders/
+intruder
